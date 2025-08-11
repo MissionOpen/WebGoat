@@ -67,3 +67,7 @@ node_modules/
 /*.iml
 /.classpath
 /.idea/
+
+echo target/ >> .gitignore
+echo *.log >> .gitignore
+echo .DS_Store >> .gitignore
