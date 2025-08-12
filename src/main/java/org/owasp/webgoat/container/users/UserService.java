@@ -32,12 +32,11 @@ public class UserService implements UserDetailsService {
       throw new UsernameNotFoundException("User repository is not available");
     }
     WebGoatUser webGoatUser = userRepository.findByUsername(username);
-    WebGoatUser webGoatUser = userRepository.findByUsername(username);
     if (webGoatUser == null) {
       throw new UsernameNotFoundException("User not found");
     }
     // Publish an event to initialize lessons for the user to keep dependencies low
-    eventPublisher.publishEvent(new UserInitializedEvent(webGoatUser));
+    //eventPublisher.publishEvent(new UserInitializedEvent(webGoatUser));
     lessonInitializables.forEach(l -> l.initialize(webGoatUser));
     return webGoatUser;
   }
