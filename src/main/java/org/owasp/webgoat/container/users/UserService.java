@@ -22,7 +22,7 @@ public class UserService implements UserDetailsService {
   private final UserProgressRepository userTrackerRepository;
   private final JdbcTemplate jdbcTemplate;
   private final Function<String, Flyway> flywayLessons;
-  private final List<Initializable> lessonInitializables; // can be removed if not used elsewhere
+  // private final List<Initializable> lessonInitializables; // can be removed if not used elsewhere
   private final ApplicationEventPublisher eventPublisher;
   private final List<Initializable> lessonInitializables;
 
@@ -32,16 +32,24 @@ public class UserService implements UserDetailsService {
       throw new UsernameNotFoundException("User repository is not available");
     }
     WebGoatUser webGoatUser = userRepository.findByUsername(username);
+    WebGoatUser webGoatUser = userRepository.findByUsername(username);
     if (webGoatUser == null) {
       throw new UsernameNotFoundException("User not found");
-      // Publish an event to initialize lessons for the user to keep dependencies low
-      eventPublisher.publishEvent(new UserInitializedEvent(webGoatUser));
-        lessonInitializables.forEach(l -> l.initialize(webGoatUser));
-      }
     }
+    // Publish an event to initialize lessons for the user to keep dependencies low
+    eventPublisher.publishEvent(new UserInitializedEvent(webGoatUser));
+    lessonInitializables.forEach(l -> l.initialize(webGoatUser));
     return webGoatUser;
   }
 
+  /**
+   * Adds a new user with the specified username and password.
+   * If the user does not already exist, also creates a user progress tracker and initializes lessons for the user.
+   *
+   * @param username the username of the new user
+   * @param password the password of the new user
+   * @throws IllegalStateException if the user repository or user tracker repository is not available
+   */
   public void addUser(String username, String password) {
     if (userRepository == null || userTrackerRepository == null) {
       throw new IllegalStateException("User repository or user tracker repository is not available");
