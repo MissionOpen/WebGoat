@@ -45,32 +45,61 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Necessario per rilevare i file modificati
 
-    # Add any setup steps before running the `github/codeql-action/init` action.
-    # This includes steps like installing compilers or runtimes (`actions/setup-node`
-    # or others). This is typically only required for manual builds.
-    # - name: Setup runtime (example)
-    #   uses: actions/setup-example@v1
+    - name: Get changed files
+      id: changed-files
+      uses: tj-actions/changed-files@v44
+      with:
+        files: |
+          **/*.java
+          **/*.js
+          **/*.ts
+          **/*.xml
+          **/*.properties
 
-    # Initializes the CodeQL tools for scanning.
+    # Setup Java Necessario per build parziali
+    - name: Setup Java
+      if: steps.changed-files.outputs.any_changed == 'true' && matrix.language == 'java-kotlin'
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '21'
+
+    # Aggiungi condizione per eseguire solo se ci sono file modificati
     - name: Initialize CodeQL
+      if: steps.changed-files.outputs.any_changed == 'true'
       uses: github/codeql-action/init@v3
       with:
         languages: ${{ matrix.language }}
         build-mode: ${{ matrix.build-mode }}
-        # If you wish to specify custom queries, you can do so here or in a config file.
-        # By default, queries listed here will override any specified in a config file.
-        # Prefix the list here with "+" to use these queries and those in the config file.
+        # Abilita le tue query personalizzate
+        queries: security-extended,security-and-quality
 
-        # For more details on CodeQL's query packs, refer to: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
-        # queries: security-extended,security-and-quality
-
-    # If the analyze step fails for one of the languages you are analyzing with
-    # "We were unable to automatically build your code", modify the matrix above
-    # to set the build mode to "manual" for that language. Then modify this step
-    # to build your code.
-    # ℹ️ Command-line programs to run using the OS shell.
-    # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
+    # Build parziale per Java (solo moduli modificati)
+    - name: Build changed Java modules only
+      if: steps.changed-files.outputs.any_changed == 'true' && matrix.language == 'java-kotlin'
+      run: |
+        echo "Changed files: ${{ steps.changed-files.outputs.all_changed_files }}"
+        
+        # Trova moduli Maven modificati
+        changed_modules=$(echo "${{ steps.changed-files.outputs.all_changed_files }}" | \
+          xargs -r dirname | \
+          xargs -r -I {} find {} -name "pom.xml" -type f 2>/dev/null | \
+          xargs -r dirname | \
+          sort -u | \
+          tr '\n' ',' | \
+          sed 's/,$//')
+        
+        echo "Changed modules: $changed_modules"
+        
+        if [ ! -z "$changed_modules" ]; then
+          mvn clean compile -pl "$changed_modules" -am -q
+        else
+          echo "No Java modules to build"
+        fi
+        
     - if: matrix.build-mode == 'manual'
       shell: bash
       run: |
@@ -81,7 +110,17 @@ jobs:
         echo '  make release'
         exit 1
 
+    # Aggiungi condizione e category per scansione parziale
     - name: Perform CodeQL Analysis
+      if: steps.changed-files.outputs.any_changed == 'true'
       uses: github/codeql-action/analyze@v3
       with:
-        category: "/language:${{matrix.language}}"
+        category: "/language:${{matrix.language}}/partial"
+
+    # NUOVO: Log dei risultati
+    - name: Summary
+      if: steps.changed-files.outputs.any_changed == 'true'
+      run: |
+        echo "✅ Partial CodeQL analysis completed for: ${{ steps.changed-files.outputs.all_changed_files }}"
+        echo "🔍 Language analyzed: ${{ matrix.language }}"
+        echo "📊 Check Security tab for results"
