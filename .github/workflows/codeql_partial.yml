@@ -10,13 +10,13 @@ on:
 #2) CONFIGURAZIONE JOBS
 jobs:
   analyze:
-    name: Analyze (${{ matrix.language }})
+    name: Analyze Java
     # Runner size impacts CodeQL analysis time. To learn more, please see:
     #   - https://gh.io/recommended-hardware-resources-for-running-codeql
     #   - https://gh.io/supported-runners-and-hardware-resources
     #   - https://gh.io/using-larger-runners (GitHub.com only)
     # Consider using larger runners or machines with greater resources for possible analysis time improvements.
-    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
 
 #3) PERMESSI - DEFINISCE COSA PUO' FARE IL WORKFLOW NEL REPOSITORY
     permissions:
@@ -25,72 +25,47 @@ jobs:
       actions: read # Per leggere altri workflow
       contents: read # Per leggere il codice del repo
 
-#4) STRATEGIA MATRIX - CI SERVE?
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-        - language: java-kotlin
-          build-mode: none # This mode only analyzes Java. Set this to 'autobuild' or 'manual' to analyze Kotlin too.
-        - language: javascript-typescript
-          build-mode: none
-          
-        # Esegue il Job 2 Volte, una per Java e una per JavaScript creando Versioni Parallele con Variabili diverse.
-        # Con <build-mode: none> CodeQl Analizza il Codice Sorgente senza Compilare
-        
-        # CodeQL supports the following values keywords for 'language': 'actions', 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'rust', 'swift'
-        # Use `c-cpp` to analyze code written in C, C++ or both
-        # Use 'java-kotlin' to analyze code written in Java, Kotlin or both
-        # Use 'javascript-typescript' to analyze code written in JavaScript, TypeScript or both
-        # To learn more about changing the languages that are analyzed or customizing the build mode for your analysis,
-        # see https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/customizing-your-advanced-setup-for-code-scanning.
-        # If you are analyzing a compiled language, you can modify the 'build-mode' for that language to customize how
-        # your codebase is analyzed, see https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/codeql-code-scanning-for-compiled-languages
-    
-#5) CHECKOUT
+#4) CHECKOUT
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
         fetch-depth: 0  # Necessario per rilevare i file modificati
 
-#6) RILEVAMENTO FILE MODIFICATI
+#5) RILEVAMENTO FILE MODIFICATI
     - name: Get changed files
       id: changed-files
       uses: tj-actions/changed-files@v44
       with:
         files: |
           **/*.java
-          **/*.js
-          **/*.ts
           **/*.xml
           **/*.properties
 
-#7) SETUP JAVA CONDIZIONALE
+#6) SETUP JAVA CONDIZIONALE
     - name: Setup Java
-      if: steps.changed-files.outputs.any_changed == 'true' && matrix.language == 'java-kotlin'
+      if: steps.changed-files.outputs.any_changed == 'true'
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
         java-version: '21'
 
-#8) AGGIUNGI CONDIZIONE PER ESEGUIRE CODEQL SOLO SE CI SONO FILE MODIFICATI
+#7) CONDIZIONE PER ESEGUIRE CODEQL SOLO SE CI SONO FILE MODIFICATI
     - name: Initialize CodeQL
       if: steps.changed-files.outputs.any_changed == 'true'
       uses: github/codeql-action/init@v3
       with:
-        languages: ${{ matrix.language }}
-        build-mode: ${{ matrix.build-mode }}
+        languages: java-kotlin
+        build-mode: none
         # Abilita le tue query personalizzate
-        queries: security-extended,security-and-quality
+        queries: .codeql/custom-queries
 
-#9) BUILD PARZIALE PER JAVA - SOLO MODULI MODIFICATI
+#8a) BUILD PARZIALE PER JAVA - SOLO MODULI MODIFICATI
     - name: Build changed Java modules only
-      if: steps.changed-files.outputs.any_changed == 'true' && matrix.language == 'java-kotlin'
+      if: steps.changed-files.outputs.any_changed == 'true'
       run: |
         echo "Changed files: ${{ steps.changed-files.outputs.all_changed_files }}"
         
-        # Trova moduli Maven modificati
         changed_modules=$(echo "${{ steps.changed-files.outputs.all_changed_files }}" | \
           xargs -r dirname | \
           xargs -r -I {} find {} -name "pom.xml" -type f 2>/dev/null | \
@@ -107,6 +82,7 @@ jobs:
           echo "No Java modules to build"
         fi
 
+      # CHE COSA FA?
       # Lista i file modificati
       # Trova le cartelle contenenti pom.xml
       # Identifica i moduli Maven da compilare
@@ -114,28 +90,59 @@ jobs:
       # -am = compila anche le dipendenze
       # -q = modalità silenziosa
 
-#10) GESTIONE BUILD MANUALE
-    - if: matrix.build-mode == 'manual'
-      shell: bash
-      run: |
-        echo 'If you are using a "manual" build mode for one or more of the' \
-          'languages you are analyzing, replace this with the commands to build' \
-          'your code, for example:'
-        echo '  make bootstrap'
-        echo '  make release'
-        exit 1
+      # Utile se hai un monorepo Maven multi-modulo (es: core, api, web, ognuno con un pom.xml).
+      # Inutile se hai un progetto Maven singolo modulo, questo step non serve a nulla.
 
-#11) ANALISI CODEQL - AGGIUNGI CONDIZIONE E CATEGORY PER SCANSIONE PARZIALE
+ #8b) PROBLEMA DI QUESTA PIPELINE
+
+      # INPUT FILE MODIFICATI - ESEMPIO
+      # src/main/java/org/owasp/webgoat/User.java
+      # src/main/java/org/owasp/webgoat/Controller.java
+
+      # PIPELINE SCRIPT
+      # Step 1: dirname
+      # src/main/java/org/owasp/webgoat
+      # src/main/java/org/owasp/webgoat
+      # Step 2: find pom.xml
+      # find src/main/java/org/owasp/webgoat -name "pom.xml"
+      # RESULT: NESSUN FILE TROVATO! (pom.xml è nella root)
+      # Step 3: dirname
+      # NESSUN INPUT
+      # Final result: 
+      # changed_modules=""  # VUOTO!
+
+      # RISULTATO FINALE
+      # if [ ! -z "$changed_modules" ]; then
+      # NON ESEGUITO (changed_modules è vuoto)
+      # mvn clean compile -pl "$changed_modules" -am -q
+      # else
+      # echo "No Java modules to build"  # ← SEMPRE QUESTO!
+      # fi
+
+      # PROBLEMI:
+      # Lo script NON compila mai nulla
+      # CodeQL non ha bytecode da analizzare
+      # Analysis fallisce o è incompleta
+      # Workflow inutilmente complesso
+
+#8c) BUILD TOTALE
+      # - name: Build WebGoat
+      # if: steps.changed-files.outputs.any_changed == 'true'  
+      # run: |
+      #   echo "Building WebGoat project..."
+      #   mvn clean compile -q -DskipTests
+
+#9) ANALISI CODEQL - AGGIUNGI CONDIZIONE E CATEGORY PER SCANSIONE PARZIALE
     - name: Perform CodeQL Analysis
       if: steps.changed-files.outputs.any_changed == 'true'
       uses: github/codeql-action/analyze@v3
       with:
-        category: "/language:${{matrix.language}}/partial"
+        category: "/language:java-kotlin/partial"
 
-#12) LOG DEI RISULTATI
+#10) LOG DEI RISULTATI
     - name: Summary
       if: steps.changed-files.outputs.any_changed == 'true'
       run: |
-        echo "Partial CodeQL analysis completed for: ${{ steps.changed-files.outputs.all_changed_files }}"
-        echo "Language analyzed: ${{ matrix.language }}"
-        echo "Check Security tab for results"
+        echo "WebGoat CodeQL analysis completed"
+        echo "File analyzed: ${{ steps.changed-files.outputs.all_changed_files }}"
+        echo "Language analyzed: java-kotlin "
