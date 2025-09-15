@@ -1,0 +1,65 @@
+#1) HEADER & TRIGGER
+name: "Codeql on Push & PR / Total Scan"
+
+on:
+  push:
+    branches: [ "custom_queries" ]
+  pull_request:
+    branches: [ "custom_queries" ]
+
+#2) CONFIGURAZIONE JOBS
+jobs:
+  analyze:
+    name: Analyze Java - Full Build
+    runs-on: ubuntu-latest
+
+#3) PERMESSI
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+
+#4) CHECKOUT
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+#5) SETUP JAVA - SEMPRE
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '21'
+        cache: 'maven'
+
+#6) INITIALIZE CODEQL - SEMPRE
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: java-kotlin
+        build-mode: manual
+        queries: .codeql/custom-queries
+
+#7) BUILD COMPLETA - TOTALE
+    - name: Build WebGoat - Full Project
+      run: |
+        echo "Building complete WebGoat project..."
+        mvn clean compile -DskipTests -q
+        echo "Build completed successfully"
+
+#8) ANALISI - SEMPRE
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:java-kotlin"
+
+    # ✅ Summary SEMPRE
+    - name: Analysis Summary
+      run: |
+        echo "Full WebGoat CodeQL analysis completed"
+        echo "Complete project analyzed"
+        echo "Language: java-kotlin"
+        echo "Trigger: ${{ github.event_name }}"
