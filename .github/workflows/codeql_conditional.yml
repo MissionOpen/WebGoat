@@ -1,5 +1,5 @@
 #1) HEADER & TRIGGER
-name: "Codeql on Push & PR / Total Scan"
+name: "Codeql on Push & PR / Conditional Scan"
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
 #2) CONFIGURAZIONE JOBS
 jobs:
   analyze:
-    name: Analyze Java - Full Build
+    name: Analyze Java - Conditional
     runs-on: ubuntu-latest
 
 #3) PERMESSI - DEFINISCE COSA PUO' FARE IL WORKFLOW NEL REPOSITORY
@@ -46,8 +46,9 @@ jobs:
         java-version: '21'
         cache: 'maven'
 
-#7) INIZIALIZZAZIONE CODEQL
+#7) INITIALIZE CODEQL
     - name: Initialize CodeQL
+      if: steps.changed-files.outputs.any_changed == 'true'
       uses: github/codeql-action/init@v3
       with:
         languages: java-kotlin
@@ -56,6 +57,7 @@ jobs:
 
 #8) BUILD
     - name: Build WebGoat - Full Project
+      if: steps.changed-files.outputs.any_changed == 'true'
       run: |
         echo "Building complete WebGoat project..."
         mvn clean compile -DskipTests -q
@@ -63,14 +65,21 @@ jobs:
 
 #9) ANALISI CODEQL
     - name: Perform CodeQL Analysis
+      if: steps.changed-files.outputs.any_changed == 'true'
       uses: github/codeql-action/analyze@v3
       with:
         category: "/language:java-kotlin"
 
-#10) LOG
+#10) LOGS
     - name: Analysis Summary
+      if: steps.changed-files.outputs.any_changed == 'true'
       run: |
-        echo "Full WebGoat CodeQL analysis completed"
-        echo "Complete project analyzed"
+        echo "WebGoat CodeQL analysis completed"
+        echo "Files analyzed: ${{ steps.changed-files.outputs.all_changed_files }}"
         echo "Language: java-kotlin"
-        echo "Trigger: ${{ github.event_name }}"
+        
+    - name: No Changes Summary
+      if: steps.changed-files.outputs.any_changed == 'false'
+      run: |
+        echo "ℹNo Java/XML/Properties files changed"
+        echo "⏭CodeQL analysis skipped for performance"
