@@ -1,5 +1,5 @@
 #1) HEADER & TRIGGER
-name: "Codeql-Trigger-on-Push&Pr"
+name: "Codeql on Push & PR / Partial Scan"
 
 on:
   push:
