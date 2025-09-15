@@ -37,7 +37,7 @@ jobs:
           **/*.xml
           **/*.properties
 
-#6) SETUP JAVA CONDIZIONALE
+#6) SETUP JAVA - CONDIZIONALE
     - name: Setup Java
       if: steps.changed-files.outputs.any_changed == 'true'
       uses: actions/setup-java@v4
@@ -46,7 +46,7 @@ jobs:
         java-version: '21'
         cache: 'maven'
 
-#7) INITIALIZE CODEQL
+#7) INITIALIZE CODEQL - CONDIZIONALE
     - name: Initialize CodeQL
       if: steps.changed-files.outputs.any_changed == 'true'
       uses: github/codeql-action/init@v3
@@ -55,7 +55,7 @@ jobs:
         build-mode: manual  # Per controllo completo della build
         queries: .codeql/custom-queries
 
-#8) BUILD
+#8) BUILD - CONDIZIONALE
     - name: Build WebGoat - Full Project
       if: steps.changed-files.outputs.any_changed == 'true'
       run: |
