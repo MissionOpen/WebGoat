@@ -55,7 +55,7 @@ jobs:
         build-mode: manual  # Per controllo completo della build
         queries: .codeql/custom-queries
 
-#8) BUILD - CONDIZIONALE
+#8) BUILD - CONDIZIONALE - TOTALE
     - name: Build WebGoat - Full Project
       if: steps.changed-files.outputs.any_changed == 'true'
       run: |
@@ -63,14 +63,14 @@ jobs:
         mvn clean compile -DskipTests -q
         echo "Build completed successfully"
 
-#9) ANALISI CODEQL
+#9) ANALISI CODEQL - CONDIZIONALE
     - name: Perform CodeQL Analysis
       if: steps.changed-files.outputs.any_changed == 'true'
       uses: github/codeql-action/analyze@v3
       with:
         category: "/language:java-kotlin"
 
-#10) LOGS
+#10) SUMMARY
     - name: Analysis Summary
       if: steps.changed-files.outputs.any_changed == 'true'
       run: |
