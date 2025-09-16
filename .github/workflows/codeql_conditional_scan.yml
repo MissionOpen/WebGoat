@@ -52,16 +52,9 @@ jobs:
       uses: github/codeql-action/init@v3
       with:
         languages: java-kotlin
-        build-mode: manual  # Per controllo completo della build
-        queries: custom-queries
+        build-mode: none
 
-#8) BUILD - CONDIZIONALE - TOTALE
-    - name: Build WebGoat - Full Project
-      if: steps.changed-files.outputs.any_changed == 'true'
-      run: |
-        echo "Building complete WebGoat project..."
-        mvn clean compile -DskipTests -q
-        echo "Build completed successfully"
+#8) BUILD MANUALE ELIMINATA
 
 #9) ANALISI CODEQL - CONDIZIONALE
     - name: Perform CodeQL Analysis
