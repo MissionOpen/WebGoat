@@ -53,7 +53,7 @@ jobs:
       with:
         languages: java-kotlin
         build-mode: manual  # Per controllo completo della build
-        queries: .codeql/custom-queries
+        queries: custom-queries
 
 #8) BUILD - CONDIZIONALE - TOTALE
     - name: Build WebGoat - Full Project
