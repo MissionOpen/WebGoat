@@ -8,7 +8,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.Map;
 import org.apache.http.HttpStatus;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Test;;
 
 class AccessControlIntegrationTest extends IntegrationTest {
 
