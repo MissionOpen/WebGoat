@@ -44,7 +44,7 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '21'
-        cache: 'maven'
+        # cache: 'maven' NON SERVE CON BUILD-MODE: NONE
 
 #7) INITIALIZE CODEQL - CONDIZIONALE
     - name: Initialize CodeQL
@@ -53,6 +53,7 @@ jobs:
       with:
         languages: java-kotlin
         build-mode: none
+        queries: .codeql/custom-queries
 
 #8) BUILD MANUALE ELIMINATA
 
