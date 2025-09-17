@@ -1,5 +1,5 @@
 #1) HEADER & TRIGGER
-name: "Codeql on Push & PR / Conditional Scan"
+name: "Codeql Advanced Setup"
 
 on:
   push:
