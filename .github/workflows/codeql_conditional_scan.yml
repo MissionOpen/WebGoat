@@ -1,9 +1,9 @@
 #1) HEADER & TRIGGER
-name: "Codeql on Push & PR / Conditional Scan"
+name: "Codeql on PR / Conditional Scan"
 
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main" ] #Se voglio triggerare su tutti i rami = branches: [ "*" ]
 
 #2) CONFIGURAZIONE JOBS
 jobs:
