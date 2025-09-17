@@ -2,10 +2,8 @@
 name: "Codeql on Push & PR / Conditional Scan"
 
 on:
-  push:
-    branches: [ "custom_queries" ]
   pull_request:
-    branches: [ "custom_queries" ]
+    branches: [ "main" ]
 
 #2) CONFIGURAZIONE JOBS
 jobs:
