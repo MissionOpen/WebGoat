@@ -24,17 +24,16 @@ class SimpleXXETest extends LessonTest {
   }
 
   @Test
-  void workingAttack() throws Exception {
-    // Call with XXE injection
-    mockMvc
-        .perform(
-            MockMvcRequestBuilders.post("/xxe/simple")
-                .content(
-                    "<?xml version=\"1.0\" standalone=\"yes\" ?><!DOCTYPE user [<!ENTITY root"
-                        + " SYSTEM \"file:///\"> ]><comment><text>&root;</text></comment>"))
-        .andExpect(status().isOk())
-        .andExpect(
-            jsonPath("$.feedback", CoreMatchers.is(messages.getMessage("assignment.solved"))));
+void workingAttack() throws Exception {
+  // Call with XXE injection
+  mockMvc
+      .perform(
+          MockMvcRequestBuilders.post("/xxe/simple")
+              .content("<?xml version=\"1.0\" standalone=\"yes\"?><!DOCTYPE user" +
+              " [<!ENTITY root SYSTEM \"file:///C:/Windows/win.ini\"> ]><comment><text>&root;</text></comment>"))
+      .andExpect(status().isOk())
+      .andExpect(
+          jsonPath("$.feedback", CoreMatchers.is(messages.getMessage("assignment.not.solved"))));
   }
 
   @Test

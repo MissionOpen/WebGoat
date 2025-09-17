@@ -61,3 +61,13 @@ node_modules/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+/target/
+/webgoat-db/
+/*.iml
+/.classpath
+/.idea/
+
+echo target/ >> .gitignore
+echo *.log >> .gitignore
+echo .DS_Store >> .gitignore
