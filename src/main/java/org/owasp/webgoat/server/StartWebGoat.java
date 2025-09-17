@@ -11,7 +11,7 @@ import org.springframework.boot.ResourceBanner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.ClassPathResource; errore
 
 @Slf4j
 public class StartWebGoat {
