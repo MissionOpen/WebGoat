@@ -57,7 +57,7 @@ jobs:
 #9) ANALISI CODEQL - CONDIZIONALE
     - name: Perform CodeQL Analysis
       if: steps.changed-files.outputs.any_changed == 'true'
-      uses: github/codeql-action/analyze@v2
+      uses: github/codeql-action/analyze@v3
       with:
         queries: ./.codeql/custom-queries
 
