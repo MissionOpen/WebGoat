@@ -51,16 +51,15 @@ jobs:
       with:
         languages: java-kotlin
         build-mode: none
-        queries: .codeql/custom-queries
 
 #8) BUILD MANUALE ELIMINATA
 
 #9) ANALISI CODEQL - CONDIZIONALE
     - name: Perform CodeQL Analysis
       if: steps.changed-files.outputs.any_changed == 'true'
-      uses: github/codeql-action/analyze@v3
+      uses: github/codeql-action/analyze@v2
       with:
-        category: "/language:java-kotlin"
+        queries: ./.codeql/custom-queries
 
 #10) SUMMARY
     - name: Analysis Summary
