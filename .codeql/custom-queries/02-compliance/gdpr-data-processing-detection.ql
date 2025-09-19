@@ -4,6 +4,9 @@
  * @name GDPR Data Processing Detection
  * @description Rileva possibili violazioni GDPR nel processing di dati personali
  * @kind problem
+ * @id java/find-sql-queries
+ * @problem.severity recommendation
+ * @tags security
  */
 
 import java
