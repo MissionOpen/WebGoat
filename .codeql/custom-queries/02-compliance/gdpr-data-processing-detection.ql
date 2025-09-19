@@ -3,6 +3,7 @@
 /**
  * @name GDPR Data Processing Detection
  * @description Rileva possibili violazioni GDPR nel processing di dati personali
+ * @kind problem
  */
 
 import java
