@@ -1,4 +1,3 @@
-// by claude (Sonnet 4)
 
 /**
  * @name GDPR Data Processing Detection

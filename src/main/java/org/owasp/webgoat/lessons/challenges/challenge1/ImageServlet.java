@@ -9,6 +9,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import java.io.IOException;
 import java.util.Random;
+
+import org.hsqldb.persist.Log;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +34,7 @@ public class ImageServlet {
             .readAllBytes();
 
     String pincode = String.format("%04d", PINCODE);
+    //asdjakdjakaj commento per change
 
     in[81216] = (byte) pincode.charAt(0);
     in[81217] = (byte) pincode.charAt(1);

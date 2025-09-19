@@ -7,7 +7,7 @@ package org.owasp.webgoat;
 public record ServerUrlConfig(String host, String port, String contextPath) {
 
   public ServerUrlConfig {
-    contextPath = contextPath.replaceAll("/", "");
+    contextPath = contextPath.replaceAll("/", ""); //error
   }
 
   public String getBaseUrl() {
