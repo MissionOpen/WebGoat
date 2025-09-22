@@ -88,12 +88,12 @@ jobs:
       run: find /home/runner/work/WebGoat/ -name "*.sarif"
  
 #11) UPLOAD SARIF E CREAZIONE ARTIFACT
-    - name: Upload CSV
+    - name: Upload SARIF
       if: steps.changed-files.outputs.any_changed == 'true'
       uses: actions/upload-artifact@v4
       with:
-        name: csv-report
-        path: /home/runner/work/WebGoat/results/java.csv
+        name: sarif-report
+        path: /home/runner/work/WebGoat/results/java.sarif
 
 #12) SUMMARY
     - name: Analysis Summary
