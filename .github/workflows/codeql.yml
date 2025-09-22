@@ -92,7 +92,7 @@ jobs:
       if: steps.changed-files.outputs.any_changed == 'true'
       uses: actions/upload-artifact@v4
       with:
-        name: sarif-report
+        name: csv-report
         path: /home/runner/work/WebGoat/results/java.csv
 
 #12) SUMMARY
