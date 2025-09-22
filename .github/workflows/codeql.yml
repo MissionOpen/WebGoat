@@ -83,17 +83,17 @@ jobs:
       uses: github/codeql-action/analyze@v3
 
 #10) DEBUG
-    - name: Debug SARIF Path
+    - name: Debug CSV Path
       if: steps.changed-files.outputs.any_changed == 'true'
-      run: find /home/runner/work/WebGoat/ -name "*.sarif"
+      run: find /home/runner/work/WebGoat/ -name "*.csv"
  
 #11) UPLOAD SARIF E CREAZIONE ARTIFACT
-    - name: Upload SARIF
+    - name: Upload CSV
       if: steps.changed-files.outputs.any_changed == 'true'
       uses: actions/upload-artifact@v4
       with:
         name: sarif-report
-        path: /home/runner/work/WebGoat/results/java.sarif
+        path: /home/runner/work/WebGoat/results/java.csv
 
 #12) SUMMARY
     - name: Analysis Summary
