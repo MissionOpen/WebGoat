@@ -1,0 +1,6 @@
+name: "Custom CodeQL Configuration"
+
+queries:
+  - uses: ./.codeql/custom-queries
+
+disable-default-queries: true
