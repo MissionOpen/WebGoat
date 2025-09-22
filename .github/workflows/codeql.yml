@@ -83,9 +83,9 @@ jobs:
       uses: github/codeql-action/analyze@v3
 
 #10) DEBUG
-    - name: Debug CSV Path
+    - name: Debug SARIF Path
       if: steps.changed-files.outputs.any_changed == 'true'
-      run: find /home/runner/work/WebGoat/ -name "*.csv"
+      run: find /home/runner/work/WebGoat/ -name "*.sarif"
  
 #11) UPLOAD SARIF E CREAZIONE ARTIFACT
     - name: Upload CSV
