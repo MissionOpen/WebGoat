@@ -81,6 +81,8 @@ jobs:
     - name: Perform CodeQL Analysis
       if: steps.changed-files.outputs.any_changed == 'true'
       uses: github/codeql-action/analyze@v3
+      with:
+        queries: ./.codeql/custom-queries
 
 #10) DEBUG
     - name: Debug SARIF Path
