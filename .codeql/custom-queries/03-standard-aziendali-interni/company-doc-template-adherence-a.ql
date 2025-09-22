@@ -8,12 +8,6 @@
  * @problem.severity warning
  * @tags documentation
  *       style
- *
- * Notes:
- * - Configure requiredDocFragments with the strings (or regex fragments) that must appear in the Javadoc header according to your company template
- *   (for example: "Component:", "Owner:", "API:", "@since", "@deprecated", etc).
- * - This query heuristically checks Javadoc text exposed by the CodeQL model. If your template is maintained as Markdown files,
- *   consider adding a separate query that inspects repository Markdown files under docs/ or the template repository.
  */
 
 import java

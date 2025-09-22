@@ -8,10 +8,6 @@
  * @problem.severity warning
  * @tags architecture
  *       design
- *
- * Notes:
- * - Thresholds are conservative defaults; tune per project:
- *   methodsThreshold = 50, fieldsThreshold = 30, totalLocThreshold = 2000
  */
 
 import java

@@ -6,6 +6,7 @@
  * @kind problem
  * @id java/resource-leak-detection
  * @problem.severity warning
+ * @tags security
  */
 
 import java
