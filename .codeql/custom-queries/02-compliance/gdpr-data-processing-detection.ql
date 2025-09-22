@@ -26,8 +26,10 @@ where call.getCallee() = m
     consent.getEnclosingStmt().getBasicBlock() = call.getEnclosingStmt().getBasicBlock() and
     consent.getCallee().getName().toLowerCase().matches("%consent%")
   )
-select call, "Possibile processing di dati personali senza controllo consenso GDPR"
-
+select call, "Possibile processing di dati personali senza controllo consenso GDPR",
+"Location: " +  call.getLocation().toString(),
+"File: " + call.getFile().toString(),
+"Riga: " + call.getLocation().getStartLine().toString()
 
 // Obiettivo:
     // Cerca chiamate a metodi che, dal nome, sembrano trattare dati personali (es. email, phone, user).

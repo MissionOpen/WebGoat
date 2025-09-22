@@ -52,4 +52,7 @@ where
     // Documentazione che non rispetta il template
     not exists(Javadoc jd | jd.getCommentedElement() = element and satisfiesTemplate(jd))
   )
-select element, "Missing or incomplete company Javadoc template. Required: Component, Owner, @since, @author"
+select element, "Missing or incomplete company Javadoc template. Required: Component, Owner, @since, @author",
+"Location: " + element.getLocation().toString(),
+"File: " + element.getFile().toString(),
+"Riga: " +element.getLocation().getStartLine().toString()

@@ -13,5 +13,10 @@ import java
 
 from StringLiteral sql
 where sql.getValue().regexpMatch("(?i).*\\b(SELECT|INSERT|UPDATE|DELETE)\\b.*")
-select sql, "Found SQL query: " + sql.getValue()
+select
+  sql,
+  "Found SQL query: " + sql.getValue(),
+  "Location: " + sql.getLocation().toString(),
+  "File: " + sql.getFile().toString(),
+  "Riga: " + sql.getLocation().getStartLine().toString()
 

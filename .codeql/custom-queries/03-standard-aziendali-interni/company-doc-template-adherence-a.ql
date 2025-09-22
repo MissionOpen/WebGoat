@@ -32,4 +32,7 @@ where (
     jd.toString().regexpMatch(".*Component:.*")and 
     jd.toString().regexpMatch(".*Owner:.*")
   )
-select element, "Public element does not conform to company Javadoc template."
+select element, "Public element does not conform to company Javadoc template.",
+"Location: " + element.getLocation().toString(),
+"File: " + element.getFile().toString(),
+"Riga: " +element.getLocation().getStartLine().toString()
