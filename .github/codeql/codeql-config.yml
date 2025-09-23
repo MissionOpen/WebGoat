@@ -4,3 +4,15 @@ queries:
   - uses: ./.codeql/custom-queries
 
 disable-default-queries: true
+
+# È necessario aggiungere almeno un'istruzione query, queries, o qlpack alla definizione della suite, altrimenti non verrà selezionata alcuna query.
+# https://docs.github.com/en/code-security/codeql-cli/using-the-advanced-functionality-of-the-codeql-cli/creating-codeql-query-suites
+
+# - query: path/to/query.ql
+# - queries: path/to/queries/
+# - exclude: path/to/excluded-query.ql
+# - include: another-suite.qls
+# - tags: security
+
+# Attraverso i tags nei metadati delle query CodeQL puoi selezionare (includere o escludere) facilmente gruppi di query in una query suite.
+# https://codeql.github.com/docs/writing-codeql-queries/metadata-for-codeql-queries/
