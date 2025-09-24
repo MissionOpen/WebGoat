@@ -35,8 +35,15 @@ jobs:
       uses: github/codeql-action/init@v3
       with:
         languages: java-kotlin
-        build-mode: autobuild
+        build-mode: manual
         config-file: ./.github/codeql/codeql-config.yml
+        
+#7) BUILD - TOTALE
+    - name: Build WebGoat - Full Project
+      run: |
+        echo "Building complete WebGoat project..."
+        mvn clean compile -DskipTests -q
+        echo "Build completed successfully"
   
 #7) ANALISI CODEQL
     - name: Perform CodeQL Analysis
