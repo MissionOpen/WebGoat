@@ -59,6 +59,13 @@ public class VulnerableTaskHolder implements Serializable {
       throw new IllegalArgumentException("outdated");
     }
 
+    try {
+      // some code that may throw an exception
+      int x = 1 / 0;
+    } catch (ArithmeticException e) {
+      // Empty catch block: this will be detected as a vulnerability
+    }
+
     // condition is here to prevent you from destroying the goat altogether
     if ((taskAction.startsWith("sleep") || taskAction.startsWith("ping"))
         && taskAction.length() < 22) {

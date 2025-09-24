@@ -68,6 +68,12 @@ public class SqlInjectionChallenge implements AssignmentEndpoint {
           attackResult =
               informationMessage(this).feedback("user.created").feedbackArgs(username).build();
         }
+        try {
+          // some code that may throw an exception
+          int x = 1 / 0;
+        } catch (ArithmeticException e) {
+          // Empty catch block: this will be detected as a vulnerability
+      }   
       } catch (SQLException e) {
         attackResult = failed(this).output("Something went wrong").build();
       }
