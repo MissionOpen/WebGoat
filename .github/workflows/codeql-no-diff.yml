@@ -1,0 +1,63 @@
+#1) HEADER & TRIGGER
+name: "Codeql on PR / Total Scan"
+
+on:
+  pull_request:
+    branches: [ "main" ] #Se voglio triggerare su tutti i rami = branches: [ "*" ]
+
+#2) CONFIGURAZIONE JOBS
+jobs:
+  analyze:
+    name: Analyze Java - Total no Diff
+    runs-on: ubuntu-latest
+
+#3) PERMESSI - DEFINISCE COSA PUO' FARE IL WORKFLOW NEL REPOSITORY
+    permissions:
+      security-events: write # Per scrivere risultati di sicurezza
+      packages: read # Per scaricare query pack CodeQL
+      actions: read # Per leggere altri workflow
+      contents: read # Per leggere il codice del repo
+
+#4) CHECKOUT
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+#5) SETUP JAVA
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '21'
+
+#6) INITIALIZE CODEQL
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: java-kotlin
+        build-mode: none
+        config-file: ./.github/codeql/codeql-config.yml
+  
+#7) ANALISI CODEQL
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+
+#8) DEBUG
+    - name: Debug SARIF Path
+      run: find /home/runner/work/WebGoat/ -name "*.sarif"
+ 
+#9) UPLOAD SARIF E CREAZIONE ARTIFACT
+    - name: Upload SARIF
+      uses: actions/upload-artifact@v4
+      with:
+        name: sarif-report
+        path: /home/runner/work/WebGoat/results/java.sarif
+
+#10) SUMMARY
+    - name: Analysis Summary
+      run: |
+        echo "WebGoat CodeQL analysis completed"
+        echo "Files analyzed: ${{ steps.changed-files.outputs.all_changed_files }}"
+        echo "Language: java-kotlin"
+        
+        
