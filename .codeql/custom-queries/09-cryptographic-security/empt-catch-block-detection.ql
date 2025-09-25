@@ -8,20 +8,18 @@
  * @problem.severity warning
  * @tags maintainability
  *       error-handling
+ * @autofix
  */
 
 import java
 
+import semmle.code.java.Autofix
+
 from CatchClause cc
 where 
-  // Il blocco catch è vuoto (non contiene statement)
   cc.getBlock().getNumStmt() = 0 and
-  
-  // Oppure contiene solo commenti (blocco con solo whitespace/commenti)
   not exists(Stmt s | s.getParent() = cc.getBlock()) and
-  
-  // Esclude catch di InterruptedException (spesso legittimo lasciarli vuoti)
   not cc.getVariable().getType().(RefType).hasQualifiedName("java.lang", "InterruptedException")
-
-select cc, "Blocco catch vuoto - potrebbe nascondere errori importanti"
+select cc, "Blocco catch vuoto - potrebbe nascondere errori importanti",
+  Autofix::insertAfter(cc.getBlock(), "System.err.println(\"Exception caught: \" + " + cc.getVariable().getName() + ");")
 
