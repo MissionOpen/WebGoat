@@ -2,10 +2,8 @@
 name: "Codeql on PR / Total Scan"
 
 on:
-  push:
-    branches: [ "main", "git_actions" ]
   pull_request:
-    branches: [ "main", "git_actions" ] #Se voglio triggerare su tutti i rami = branches: [ "*" ]
+    branches: [ "main", ]
 
 #2) CONFIGURAZIONE JOBS
 jobs:
